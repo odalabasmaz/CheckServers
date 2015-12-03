@@ -28,9 +28,9 @@ HOW TO USE
     $ python CheckServers.py
     $ python CheckServers.py onFailOnly=False
 
-    *onFailOnly* parameter is *True* by default.
-    You can change it to *False* if you want to inform you even if everything is OK with servers.
-    If you let it True, it only informs you in case of an unusual server situation.
+*onFailOnly* parameter is *True* by default.
+You can change it to *False* if you want to inform you even if everything is OK with servers.
+If you let it True, it only informs you in case of an unusual server situation.
 
 2-  Modify **config/WLConfig.py** in order to connect WebLogic Application Server
 
