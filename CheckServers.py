@@ -22,7 +22,10 @@ def do_check_servers(on_fail):
     if is_succeed:
         print 'EVERYTHING IS OK!'
         if not on_fail:
+            print 'sending email'
             send_success_mail(result_html_content)
+        else:
+            print 'skipping email'
     else:
         print 'HOUSTON WE HAVE A PROBLEM!'
         send_failure_mail(result_html_content)
