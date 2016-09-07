@@ -6,6 +6,7 @@
 # @since    Dec, 2015
 
 import sys
+import time
 
 from ConnectionService import *
 from MailService import *
@@ -48,5 +49,6 @@ def init():
 
 
 if __name__ == '__main__':
+    print 'Checking servers... [Datetime: ', time.strftime("%d/%m/%Y %H:%M:%S"), "]"
     init()
     do_check_servers(on_fail_only)
