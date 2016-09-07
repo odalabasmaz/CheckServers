@@ -193,7 +193,7 @@ def has_any_failure(system_status, status_list):
     for status in system_status:
         count = int(system_status[status])
         if status != "OK" and count != 0:
-            return False
+            return True
 
     key_state = 'State'
     key_health = 'Health'
