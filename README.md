@@ -1,8 +1,12 @@
-CheckServers  v1.0
+CheckServers  v2.0
 ==================
 This program allows you to check your servers' statuses on WebLogic Application Servers
 Informs you by sending e-mails if there is something unusual,
 so you do not have to worry about the servers running and check them all the time.
+
+Kafka support with v2.0.
+Program sends server status metrics to kafka and stream-reactor helps to move data from kafka into InfluxDB which is a time-series database, 
+then Grafana visualize the metrics within dashboards and helps us to monitor all system easily. You can also create alarms!
 
 Program scans;
 -   running server status under 'Environment > Servers > Configuration' and checks if any state is not RUNNING and/or Health is not OK
@@ -19,6 +23,7 @@ TESTED ON
 ---------
 - WebLogic Server Version: 12.1.3.0.0
 - Gmail and MS Exchange Server SMTP Servers
+- Kafka 0.10
 
 
 HOW TO USE
@@ -36,7 +41,9 @@ If you let it True, it only informs you in case of an unusual server situation.
 
 3-  Modify **config/MailConfig.py** in order to manage your e-mail account, and receivers.
 
-4-  Modify your **crontab** and add new jobs in order to run **CheckServers.py** periodically.
+4-  Modify **config/KafkaConfig.py** in order to manage your kafka connection properties.
+
+5-  Modify your **crontab** and add new jobs in order to run **CheckServers.py** periodically.
 
     # Crontab on Linux
     $ export EDITOR=vim     # you can choose your best editor
