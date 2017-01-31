@@ -11,9 +11,11 @@ from types import NoneType
 import mechanize
 from BeautifulSoup import BeautifulSoup
 
+from SimpleKafkaProducer import SimpleKafkaProducer
+from Utils import current_time_millis
 from config.WLConfig import *
+from kafkaConnector.Message import Message
 
-# list-dictionary
 header_list = []
 server_list = []
 column_sizes = {}
@@ -209,3 +211,48 @@ def check_servers():
     response = do_login_and_request_page()
     system_status, server_status_list = get_server_status(response)
     return system_status, server_status_list
+
+
+def send_to_kafka(system_status, status_list):
+    producer = SimpleKafkaProducer()
+    time = current_time_millis()
+
+    # server health
+    any_system_failure = False
+    for status in system_status:
+        count = int(system_status[status])
+        if status != "OK" and count != 0:
+            any_system_failure = True
+        msg = Message(time)
+        msg.tag("eventType", "SYSTEM_HEALTH")
+        msg.tag("status", status)
+        msg.field("statusCount", count)
+        msg.tag("systemStatus", 'FAILURE' if any_system_failure else 'OK')
+        msg.field("systemStatusValue", 0 if any_system_failure else 1)
+        producer.sendMessage("system-health", msg)
+
+    # server status
+    any_server_failure = False
+    for server in status_list:
+        if server['State'] != 'RUNNING' or server['Health'] != 'OK':
+            any_server_failure = True
+        msg = Message(time)
+        msg.tag("eventType", "SERVER_HEALTH")
+        msg.tag("serversStatus", 'FAILURE' if any_server_failure else 'OK')
+        msg.field("serversStatusValue", 0 if any_server_failure else 1)
+        msg.tag("name", server['Name'])
+        msg.tag("type", server['Type'])
+        msg.tag("cluster", server['Cluster'])
+        msg.tag("machine", server['Machine'])
+        msg.tag("state", server['State'])
+        msg.tag("health", server['Health'])
+        msg.field("listenPort", server['Listen Port'])
+        msg.field("clusterWeight", server['Cluster Weight'])
+        msg.tag("currentMachine", server['Current Machine'])
+        msg.field("currentlyOpenSockets", server['Currently Open Sockets'])
+        msg.field("heapFreeCurrent", server['Heap Free Current'])
+        msg.field("heapSizeCurrent", server['Heap Size Current'])
+        msg.field("listenThreadStartDelaySecs", server['Listen Thread Start Delay Secs'])
+        msg.field("lockedUsersCurrentCount", server['Locked Users Current Count'])
+        msg.field("processorLoad", server['Processor Load'].split('%')[0])
+        producer.sendMessage("server-health", msg)

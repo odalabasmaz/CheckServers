@@ -8,19 +8,26 @@ from Utils import current_time_millis
 
 
 class Message:
-    def __init__(self):
+    def __init__(self, time=current_time_millis()):
         self.tags = dict()
         self.fields = dict()
-        self.timestamp = current_time_millis()
+        self.timestamp = time
 
     def tag(self, key, value):
-        self.tags[key] = value
+        if type(value) is not str or value:
+            self.tags[key] = value
 
     def field(self, key, value):
-        self.fields[key] = value
+        if type(value) is not str or value:
+            self.fields[key] = float(value)
+
+    def string_field(self, key, value):
+        if type(value) is str and value:
+            self.fields[key] = value
 
     def time(self, value):
-        self.timestamp = value
+        if value:
+            self.timestamp = value
 
     def toJson(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)

@@ -16,6 +16,7 @@ on_fail_only = True
 
 def do_check_servers(on_fail):
     system_status, server_status_list = check_servers()
+    send_to_kafka(system_status, server_status_list)
     is_succeed = not has_any_failure(system_status, server_status_list)
     status_list_str = get_server_status_result_str(server_status_list)
     result_html_content = get_server_status_as_htlm_table(system_status, server_status_list, is_succeed)
