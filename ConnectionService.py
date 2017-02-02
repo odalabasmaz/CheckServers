@@ -252,6 +252,7 @@ def send_to_kafka(system_status, status_list):
         msg.field("currentlyOpenSockets", server['Currently Open Sockets'])
         msg.field("heapFreeCurrent", server['Heap Free Current'])
         msg.field("heapSizeCurrent", server['Heap Size Current'])
+        msg.field("heapUsageCurrent", (int(server['Heap Size Current']) - int(server['Heap Free Current'])))
         msg.field("listenThreadStartDelaySecs", server['Listen Thread Start Delay Secs'])
         msg.field("lockedUsersCurrentCount", server['Locked Users Current Count'])
         msg.field("processorLoad", server['Processor Load'].split('%')[0])
