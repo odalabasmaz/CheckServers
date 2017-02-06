@@ -245,7 +245,9 @@ def send_to_kafka(system_status, status_list):
         msg.tag("cluster", server['Cluster'])
         msg.tag("machine", server['Machine'])
         msg.tag("state", server['State'])
+        msg.string_field("state", server['State'])
         msg.tag("health", server['Health'])
+        msg.string_field("health", server['Health'])
         msg.field("listenPort", server['Listen Port'])
         msg.field("clusterWeight", server['Cluster Weight'])
         msg.tag("currentMachine", server['Current Machine'])
@@ -257,3 +259,12 @@ def send_to_kafka(system_status, status_list):
         msg.field("lockedUsersCurrentCount", server['Locked Users Current Count'])
         msg.field("processorLoad", server['Processor Load'].split('%')[0])
         producer.sendMessage("server-health", msg)
+
+    msg = Message(time)
+    msg.tag("eventType", "HEALTH")
+    msg.tag("serversStatus", 'FAILURE' if any_server_failure else 'OK')
+    msg.field("serversStatusValue", 0 if any_server_failure else 1)
+    msg.tag("systemStatus", 'FAILURE' if any_system_failure else 'OK')
+    msg.field("systemStatusValue", 0 if any_system_failure else 1)
+    producer.sendMessage("server-health", msg)
+
