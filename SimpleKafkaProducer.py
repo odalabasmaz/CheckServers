@@ -15,8 +15,8 @@ class SimpleKafkaProducer:
                                       key_serializer=lambda v: json.dumps(v, default=lambda o: o.__dict__, sort_keys=True).encode('utf-8'),
                                       value_serializer=lambda v: json.dumps(v, default=lambda o: o.__dict__, sort_keys=True).encode('utf-8'))
 
-    def sendMessage(self, key, msg):
+    def sendMessage(self, key, msg, topic=kafka_topic):
         print "# sending msg: ", key, msg.toJson()
-        self.producer.send(kafka_topic, key=key, value=msg)
+        self.producer.send(topic, key=key, value=msg)
         self.producer.flush()
         print "# message sent."

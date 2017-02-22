@@ -27,12 +27,12 @@ def do_login_and_request_page():
     br.addheaders = [("User-agent",
                       "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.10 (maverick) Firefox/3.6.13")]
 
-    br.open(wl_login_uri)
+    br.open(WLS_LOGIN_URI)
 
     br.select_form(name="loginData")
 
-    br["j_username"] = wl_username
-    br["j_password"] = wl_password
+    br["j_username"] = WLS_USERNAME
+    br["j_password"] = WLS_PASSWORD
 
     logged_in = br.submit()
 
@@ -42,7 +42,7 @@ def do_login_and_request_page():
         print "Authentication Denied"
         return "Authentication Denied"
 
-    res = br.open(wl_main_uri).read()
+    res = br.open(WLS_MAIN_URI).read()
     return res
 
 
