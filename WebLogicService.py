@@ -3,9 +3,11 @@ import httplib
 import json
 import string
 
+from SimpleKafkaProducer import SimpleKafkaProducer
+from Utils import current_time_millis
 from config.WLConfig import *
+from kafkaConnector.Message import Message
 
-# WLS LINKS
 WLS_ROOT = "/management/wls/latest/"
 WLS_SERVERS = "/management/wls/latest/servers"
 WLS_DEPLOYMENTS = "/management/wls/latest/deployments"
@@ -46,7 +48,8 @@ SERVER_KEYS = ['health', 'activeHttpSessionCount',
                'jvmProcessorLoad', 'usedPhysicalMemory']
 
 DATASOURCE_KEYS = ['state', 'serverName',
-                   'connectionsTotalCount', 'leakedConnectionCount', 'waitSecondsHighCount',
+                   'connectionsTotalCount', 'leakedConnectionCount', 'waitSecondsHighCount', 'waitingForConnectionCurrentCount',
+                   'numAvailable', 'numUnavailable',
                    'activeConnectionsCurrentCount', 'currCapacity', 'waitingForConnectionCurrentCount']
 
 
@@ -56,6 +59,8 @@ def check_root(link):
         print "HTTP status code: " + str(status_code)
         return
 
+    producer = SimpleKafkaProducer()
+    time = current_time_millis()
     jres = json.loads(res)
     print 'SERVER OVERALL HEALTH'
     item = jres['item']
@@ -64,6 +69,18 @@ def check_root(link):
             print '\t', key, ':', item[key]['state']
         else:
             print '\t', key, ':', item[key]
+
+    msg = Message(time)
+    msg.tag('eventType', 'WLS_ROOT')
+    msg.tag('eventSource', 'WLS_REST')
+    msg.tag('name', item['name'])
+    msg.tag('overallServiceHealth', item['overallServiceHealth']['state'])
+    msg.tag('productionMode', item['productionMode'])
+    msg.field('activeServerCount', item['activeServerCount'])
+    msg.field('activeHttpSessionCount', item['activeHttpSessionCount'])
+    msg.field('activeThreadCount', item['activeThreadCount'])
+    msg.field('configuredServerCount', item['configuredServerCount'])
+    producer.sendMessage('wls-health', msg, 'wls-test')
 
 
 def check_servers(link):
