@@ -10,6 +10,7 @@ import time
 
 from ConnectionService import *
 from MailService import *
+from WebLogicService import WebLogicService
 
 on_fail_only = True
 
@@ -33,6 +34,11 @@ def do_check_servers(on_fail):
         send_failure_mail(result_html_content)
 
 
+def do_check_wls_over_rest():
+    service = WebLogicService()
+    service.check_wls()
+
+
 def init():
     global on_fail_only
     if len(sys.argv) == 1:
@@ -53,3 +59,4 @@ if __name__ == '__main__':
     print 'Checking servers... [Datetime: ', time.strftime("%d/%m/%Y %H:%M:%S"), "]"
     init()
     do_check_servers(on_fail_only)
+    do_check_wls_over_rest()

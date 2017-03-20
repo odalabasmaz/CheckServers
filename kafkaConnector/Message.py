@@ -15,7 +15,7 @@ class Message:
 
     def tag(self, key, value):
         if type(value) is not str or value:
-            self.tags[key] = value
+            self.tags[key] = str(value)
 
     def field(self, key, value):
         if type(value) is not str or value:
